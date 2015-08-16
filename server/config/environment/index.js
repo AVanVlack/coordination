@@ -50,6 +50,10 @@ var all = {
     callbackURL:  (process.env.DOMAIN || '') + '/auth/twitter/callback'
   },
 
+  google: {
+    clientID: process.env.GOOGLE_API_KEY
+  }
+
 };
 
 // Export the config object based on the NODE_ENV
