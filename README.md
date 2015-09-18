@@ -8,6 +8,8 @@
  ----------
  Requirments: Mongo, Node
 
+ Twitter api key needed for login.
+
  To setup:
  1. Clone
  2. `node install && bower install`

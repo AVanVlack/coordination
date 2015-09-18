@@ -24,10 +24,41 @@ exports.show = function(req, res) {
 
 // Get a list of places to go and the number of people going
 exports.places = function(req, res) {
+  console.log(req.query.lat)
+  console.log(req.query.lng)
   var options = {
     hostname: 'maps.googleapis.com',
     port: 443,
-    path: '/maps/api/place/nearbysearch/json?location=45.5682809,-122.6485222&radius=500&types=bar&key=' + config.google.clientID,
+    path: '/maps/api/place/nearbysearch/json?location='+req.query.lat+','+req.query.lng+'&radius=500&types=bar&key=' + config.google.clientID,
+    method: 'GET'
+  };
+  console.log(options.path)
+
+  var places = https.get(options, function(data) {
+    console.log('STATUS: ' + data.statusCode);
+    console.log("headers: ", data.headers);
+    var output = {};
+    data.on('data', function (chunk) {
+      res.write(chunk);
+    });
+    data.on('end', function () {
+      console.log(output)
+      res.end()
+    })
+  })
+  places.end()
+  places.on('error', function(e){
+    console.error(e);
+  });
+
+}
+//places autocomplet for search
+exports.lookup = function(req, res) {
+  console.log(req.params.search)
+  var options = {
+    hostname: 'maps.googleapis.com',
+    port: 443,
+    path: '/maps/api/place/autocomplete/json?input=' + req.params.search + '&types=geocode&language=fr&key=' + config.google.clientID,
     method: 'GET'
   };
 
@@ -46,12 +77,13 @@ exports.places = function(req, res) {
 
 }
 
-exports.lookup = function(req, res) {
-  console.log(req.params.search)
+// Get the details of a place.
+exports.details = function(req, res) {
+  var location = req.params.long
   var options = {
     hostname: 'maps.googleapis.com',
     port: 443,
-    path: '/maps/api/place/autocomplete/json?input=' + req.params.search + '&types=geocode&language=fr&key=' + config.google.clientID,
+    path: '/maps/api/place/nearbysearch/json?location=45.5682809,-122.6485222&radius=500&types=bar&key=' + config.google.clientID,
     method: 'GET'
   };
 
