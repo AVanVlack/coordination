@@ -10,7 +10,12 @@
       Sign In</div>
     </div>
     <div class="input-group">
-      <input type="text" class="form-control" id="" placeholder="Search city or place">
+      <input type="text"
+             ng-model="someTerm"
+             class="form-control"
+             placeholder="Search city or place"
+             typeahead="place.name for place in autocomplete($viewValue)"
+             typeahead-on-select="onSelectAutocomplete($item, $model, $label)">
       <span class="input-group-btn">
         <button class="btn btn-default" type="button" name="button" ng-click="getLocation()">Use Location</button>
       </span>
@@ -22,7 +27,10 @@
   <ul class="list-group">
     <li class="list-group-item" ng-repeat="place in listData.results">
       {{place.name}}
-      <span class="badge">14 going</span>
+      <span class="pull-right">
+        <span class="badge">14 going</span>
+        <button class="btn btn-xs btn-default" ng-click="postAsGoing(place.place_id)">Lets go!</button>
+      </span>
     </li>
   </ul>
 </div>

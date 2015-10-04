@@ -58,42 +58,48 @@ exports.lookup = function(req, res) {
   var options = {
     hostname: 'maps.googleapis.com',
     port: 443,
-    path: '/maps/api/place/autocomplete/json?input=' + req.params.search + '&types=geocode&language=fr&key=' + config.google.clientID,
+    path: '/maps/api/place/autocomplete/json?input=' + req.params.search + '&types=geocode&language=en&key=' + config.google.clientID,
     method: 'GET'
   };
 
   var places = https.request(options, function(data) {
     console.log('STATUS: ' + data.statusCode);
     console.log('HEADERS: ' + JSON.stringify(data.headers));
-    data.setEncoding('utf8');
+    var output = {};
     data.on('data', function (chunk) {
       res.write(chunk);
     });
+    data.on('end', function () {
+      console.log(output)
+      res.end()
+    })
   })
   places.end()
   places.on('error', function(e){
     console.error(e);
   });
-
 }
 
 // Get the details of a place.
 exports.details = function(req, res) {
-  var location = req.params.long
   var options = {
     hostname: 'maps.googleapis.com',
     port: 443,
-    path: '/maps/api/place/nearbysearch/json?location=45.5682809,-122.6485222&radius=500&types=bar&key=' + config.google.clientID,
+    path: '/maps/api/place/details/json?placeid=' + req.params.placeId + '&key=' + config.google.clientID,
     method: 'GET'
   };
 
-  var places = https.request(options, function(data) {
+  var places = https.get(options, function(data) {
     console.log('STATUS: ' + data.statusCode);
-    console.log('HEADERS: ' + JSON.stringify(data.headers));
-    data.setEncoding('utf8');
+    console.log("headers: ", data.headers);
+    var output = {};
     data.on('data', function (chunk) {
       res.write(chunk);
     });
+    data.on('end', function () {
+      console.log(output)
+      res.end()
+    })
   })
   places.end()
   places.on('error', function(e){
@@ -105,7 +111,9 @@ exports.details = function(req, res) {
 
 // Creates a new place in the DB.
 exports.create = function(req, res) {
-  Place.create(req.body, function(err, place) {
+  var newPlace = req.body;
+  newPlace.userID = req.user._id;
+  Place.create(newPlace, function(err, place) {
     if(err) { return handleError(res, err); }
     return res.status(201).json(place);
   });
