@@ -4,6 +4,8 @@ var _ = require('lodash');
 var Place = require('./place.model');
 var config = require('../../config/environment');
 var https = require("https");
+var moment = require("moment")
+moment().format();
 
 // Get list of people going
 exports.index = function(req, res) {
@@ -24,37 +26,44 @@ exports.show = function(req, res) {
 
 // Get a list of places to go and the number of people going
 exports.places = function(req, res) {
-  console.log(req.query.lat)
-  console.log(req.query.lng)
+  console.log(req.url)
   var options = {
     hostname: 'maps.googleapis.com',
     port: 443,
     path: '/maps/api/place/nearbysearch/json?location='+req.query.lat+','+req.query.lng+'&radius=500&types=bar&key=' + config.google.clientID,
     method: 'GET'
   };
-  console.log(options.path)
 
-  var places = https.get(options, function(data) {
-    console.log('STATUS: ' + data.statusCode);
-    console.log("headers: ", data.headers);
-    var output = {};
+  var googlePlace = https.get(options, function(data) {
+    var raw = '';
+    var body = [];
     data.on('data', function (chunk) {
-      res.write(chunk);
+      raw += chunk;
     });
     data.on('end', function () {
-      console.log(output)
-      res.end()
+      raw = JSON.parse(raw).results;
+      raw.forEach(function(item, index){
+        var aPlace = item;
+        //query a count of people for each place
+        Place.count({placeID: aPlace.place_id}, function(err, count){
+          aPlace.going = count;
+          body.push(aPlace);
+          //flow control: send and end on last db entry
+          if(index === raw.length -1){
+            res.end(JSON.stringify(body));
+          }
+        });
+      });
     })
   })
-  places.end()
-  places.on('error', function(e){
+  googlePlace.end()
+  googlePlace.on('error', function(e){
     console.error(e);
   });
 
 }
 //places autocomplet for search
 exports.lookup = function(req, res) {
-  console.log(req.params.search)
   var options = {
     hostname: 'maps.googleapis.com',
     port: 443,
@@ -63,8 +72,6 @@ exports.lookup = function(req, res) {
   };
 
   var places = https.request(options, function(data) {
-    console.log('STATUS: ' + data.statusCode);
-    console.log('HEADERS: ' + JSON.stringify(data.headers));
     var output = {};
     data.on('data', function (chunk) {
       res.write(chunk);
@@ -90,8 +97,6 @@ exports.details = function(req, res) {
   };
 
   var places = https.get(options, function(data) {
-    console.log('STATUS: ' + data.statusCode);
-    console.log("headers: ", data.headers);
     var output = {};
     data.on('data', function (chunk) {
       res.write(chunk);
@@ -113,6 +118,10 @@ exports.details = function(req, res) {
 exports.create = function(req, res) {
   var newPlace = req.body;
   newPlace.userID = req.user._id;
+  var ttl = moment().utcOffset(req.body.timeOffset).endOf('day').add(3,'hours');
+  ttl.utc()
+  newPlace.expireAt = ttl.toDate();
+
   Place.create(newPlace, function(err, place) {
     if(err) { return handleError(res, err); }
     return res.status(201).json(place);

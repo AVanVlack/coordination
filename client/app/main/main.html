@@ -7,7 +7,9 @@
       <div class="col-md-4">
       See how many people will be there tonight</div>
       <div class="col-md-3">
-      Sign In</div>
+        <a class="btn btn-twitter" href="" ng-click="loginOauth('twitter')">
+          <i class="fa fa-twitter"></i> Connect with Twitter
+        </a>
     </div>
     <div class="input-group">
       <input type="text"
@@ -25,11 +27,11 @@
 
 <div class="container">
   <ul class="list-group">
-    <li class="list-group-item" ng-repeat="place in listData.results">
+    <li class="list-group-item" ng-repeat="place in listData">
       {{place.name}}
       <span class="pull-right">
-        <span class="badge">14 going</span>
-        <button class="btn btn-xs btn-default" ng-click="postAsGoing(place.place_id)">Lets go!</button>
+        <span class="badge">{{place.going}} going</span>
+        <button class="btn btn-xs btn-default" ng-click="postAsGoing(place.place_id, $index)">Lets go!</button>
       </span>
     </li>
   </ul>
