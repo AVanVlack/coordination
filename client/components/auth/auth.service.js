@@ -107,7 +107,6 @@ angular.module('vanvlackCoordinationApp')
        * @return {Boolean}
        */
       isLoggedIn: function() {
-        console.log('well well')
         return currentUser.hasOwnProperty('role');
       },
 

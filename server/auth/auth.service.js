@@ -27,8 +27,9 @@ function isAuthenticated() {
     .use(function(req, res, next) {
       User.findById(req.user._id, function (err, user) {
         if (err) return next(err);
-        if (!user) return res.status(401).send('Unauthorized');
-
+        if (!user) {
+          return res.status(401).send('Unauthorized');
+      }
         req.user = user;
         next();
       });
@@ -67,7 +68,7 @@ function setTokenCookie(req, res) {
   if (!req.user) return res.status(404).json({ message: 'Something went wrong, please try again.'});
   var token = signToken(req.user._id, req.user.role);
   res.cookie('token', JSON.stringify(token));
-  res.redirect('/');
+  res.redirect(req.session.returnTo);
 }
 
 exports.isAuthenticated = isAuthenticated;

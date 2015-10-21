@@ -57,7 +57,7 @@ angular.module('vanvlackCoordinationApp')
       })
     }
     $scope.loginOauth = function(provider) {
-      $window.location.href = '/auth/' + provider;
+      $window.location.href = '/auth/' + provider + $location.url();
     };
 
     //Get list if params in url. eg. twtitter callback.

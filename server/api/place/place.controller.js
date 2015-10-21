@@ -26,7 +26,6 @@ exports.show = function(req, res) {
 
 // Get a list of places to go and the number of people going
 exports.places = function(req, res) {
-  console.log(req.url)
   var options = {
     hostname: 'maps.googleapis.com',
     port: 443,
