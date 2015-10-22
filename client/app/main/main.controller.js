@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('vanvlackCoordinationApp')
-  .controller('MainCtrl', function ($scope, $http, $routeParams, $location, $window) {
+  .controller('MainCtrl', function ($scope, $http, $routeParams, $location, $window, Modal) {
     $scope.listData = [];
     //gets geolocation from browser/sensor and calls getNearby
 

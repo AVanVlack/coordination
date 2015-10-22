@@ -24,54 +24,42 @@ angular.module('vanvlackCoordinationApp')
 
     // Public API here
     return {
-
       /* Confirmation modals */
       confirm: {
-
-        /**
-         * Create a function to open a delete confirmation modal (ex. ng-click='myModalFn(name, arg1, arg2...)')
-         * @param  {Function} del - callback, ran when delete is confirmed
-         * @return {Function}     - the function to open the modal (ex. myModalFn)
-         */
         delete: function(del) {
-          del = del || angular.noop;
-
-          /**
-           * Open a delete confirmation modal
-           * @param  {String} name   - name or info to show on modal
-           * @param  {All}           - any additional args are passed straight to del callback
-           */
+          //this is the example provided
+        },
+        askToLogin: function(cb) { //my new modal
+          cb = cb || angular.noop;
           return function() {
             var args = Array.prototype.slice.call(arguments),
                 name = args.shift(),
-                deleteModal;
-
-            deleteModal = openModal({
+                theModal;
+            theModal = openModal({ //openModal is a function the modal service defines.  It is just a wrapper for $Modal
               modal: {
                 dismissable: true,
-                title: 'Confirm Delete',
-                html: '<p>Are you sure you want to delete <strong>' + name + '</strong> ?</p>',
-                buttons: [{
-                  classes: 'btn-danger',
-                  text: 'Delete',
-                  click: function(e) {
-                    deleteModal.close(e);
-                  }
-                }, {
-                  classes: 'btn-default',
+                title: 'Login',
+                html: '<p>To be able to mark yourself as going, please login using your Twitter account.</p>', //set the modal message here, name is the parameter we passed in
+                buttons: [ {//this is where you define you buttons and their appearances
+                  classes: 'btn-warning',
                   text: 'Cancel',
-                  click: function(e) {
-                    deleteModal.dismiss(e);
+                  click: function(event) {
+                    theModal.dismiss(event);
                   }
-                }]
+                },{
+                  classes: 'btn-primary',
+                  text: 'Login',
+                  click: function(event) {
+                    theModal.close(event);
+                  }
+                },]
               }
-            }, 'modal-danger');
-
-            deleteModal.result.then(function(event) {
-              del.apply(event, args);
+            }, 'modal-primary');
+            theModal.result.then(function(event) {
+              cb.apply(event, args); //this is where all callback is actually called
             });
           };
         }
       }
-    };
+    }
   });

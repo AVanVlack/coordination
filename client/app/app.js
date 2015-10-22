@@ -17,7 +17,11 @@ angular.module('vanvlackCoordinationApp', [
     $httpProvider.interceptors.push('authInterceptor');
   })
 
-  .factory('authInterceptor', function ($rootScope, $q, $cookieStore, $location) {
+  .factory('authInterceptor', function ($rootScope, $q, $cookieStore, $location, $timeout, $injector, $window) {
+    var Modal;
+    $timeout(function () {
+      Modal = $injector.get('Modal');
+    });
     return {
       // Add authorization token to headers
       request: function (config) {
@@ -31,10 +35,13 @@ angular.module('vanvlackCoordinationApp', [
       // Intercept 401s and redirect you to login
       responseError: function(response) {
         if(response.status === 401) {
-          $location.path('/login');
-          // remove any stale tokens
+          //brings up a modal asking to login if we get a 401: no auth
+          var login = Modal.confirm.askToLogin(function(message) {
+            $window.location.href = '/auth/' + 'twitter' + $location.url();
+          });
+          login();
           $cookieStore.remove('token');
-          return $q.reject(response);
+          $q.reject(response);
         }
         else {
           return $q.reject(response);
