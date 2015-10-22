@@ -113,17 +113,27 @@ exports.details = function(req, res) {
 }
 
 
-// Creates a new place in the DB.
+// Create or remove a new place in the DB.
 exports.create = function(req, res) {
-  var newPlace = req.body;
-  newPlace.userID = req.user._id;
-  var ttl = moment().utcOffset(req.body.timeOffset).endOf('day').add(3,'hours');
-  ttl.utc()
-  newPlace.expireAt = ttl.toDate();
+  var query = Place.where({'placeID': req.body.placeID}, {'userID': req.user._ID}).exec(function(err, place){
+    if(place.length === 0){
+      var newPlace = req.body;
+      newPlace.userID = req.user._id;
+      var ttl = moment().utcOffset(req.body.timeOffset).endOf('day').add(3,'hours');
+      ttl.utc()
+      newPlace.expireAt = ttl.toDate();
+      Place.create(newPlace, function(err, place) {
+        if(err) { return handleError(res, err); }
+        return res.status(201).json(place);
+      });
+    }else{
+    //user has already voted place, remove entry
+      place[0].remove(function(err) {
+        if(err) { return handleError(res, err); }
+        return res.status(204).send('No Content');
 
-  Place.create(newPlace, function(err, place) {
-    if(err) { return handleError(res, err); }
-    return res.status(201).json(place);
+      });
+    }
   });
 };
 

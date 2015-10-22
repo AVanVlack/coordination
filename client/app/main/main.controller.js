@@ -49,13 +49,21 @@ angular.module('vanvlackCoordinationApp')
     }
     //post as going to place
     $scope.postAsGoing = function(placeID, index){
-      $scope.listData[index].going += 1;
       var offset = new Date().getTimezoneOffset() / 60;
       offset *= -1;
       $http.post('/api/places/', {placeID: placeID, timeOffset: offset,}).then(function(res){
-        console.log(res);
+        switch (res.status){
+          case 201:
+            console.log(res);
+            $scope.listData[index].going += 1;
+            break;
+          case 204:
+            console.log(res);
+            $scope.listData[index].going -= 1;
+            break;
+        }
       })
-    }
+    };
     $scope.loginOauth = function(provider) {
       $window.location.href = '/auth/' + provider + $location.url();
     };

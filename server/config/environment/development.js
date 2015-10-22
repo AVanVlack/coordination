@@ -8,5 +8,5 @@ module.exports = {
     uri: 'mongodb://localhost/vanvlackcoordination-dev'
   },
 
-  seedDB: true
+  seedDB: false
 };
