@@ -1,38 +1,40 @@
 
-<header class="hero-unit" id="banner">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-3">
-      Bar app</div>
-      <div class="col-md-4">
-      See how many people will be there tonight</div>
-      <div class="col-md-3">
-        <a class="btn btn-twitter" href="" ng-click="loginOauth('twitter')">
-          <i class="fa fa-twitter"></i> Connect with Twitter
-        </a>
-    </div>
-    <div class="input-group">
-      <input type="text"
-             ng-model="someTerm"
-             class="form-control"
-             placeholder="Search city or place"
-             typeahead="place.name for place in autocomplete($viewValue)"
-             typeahead-on-select="onSelectAutocomplete($item, $model, $label)">
-      <span class="input-group-btn">
-        <button class="btn btn-default" type="button" name="button" ng-click="getLocation()">Use Location</button>
-      </span>
-    </div>
+<div class="row" id="header">
+  <div class="col-md-2 col-md-push-8 col-md-offset-1 text-right">
+    <a class="btn btn-twitter" href="" ng-click="loginOauth('twitter')">
+      <i class="fa fa-twitter"></i> Sign in
+    </a>
   </div>
-</header>
+  <div class="col-md-8 col-md-pull-2">
+      <h1 class="block-text-yellow" id="logo">Barver</h1>
+      <br>
+      <h2 id="about" class="block-text-yellow">See how many people will be going tonight. </h2><i class="fa fa-info-circle fa-lg" id="i"></i>
+  </div>
+</div>
 
-<div class="container">
+<div class="container" id="content">
   <ul class="list-group">
-    <li class="list-group-item" ng-repeat="place in listData">
+    <li class="list-group-item" id="search">
+      <div class="input-group">
+        <input type="text"
+               ng-model="someTerm"
+               class="form-control"
+               placeholder="Search city or place"
+               typeahead="place.name for place in autocomplete($viewValue)"
+               typeahead-on-select="onSelectAutocomplete($item, $model, $label)">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button" name="button" ng-click="getLocation()" id="geolocation-btn">{{geolocationBtnText}}</button>
+        </span>
+      </div>
+    </li>
+    <li class="list-group-item text-overflow clearfix" ng-repeat="place in listData">
       {{place.name}}
       <span class="pull-right">
-        <span class="badge">{{place.going}} going</span>
-        <button class="btn btn-xs btn-default" ng-click="postAsGoing(place.place_id, $index)">Lets go!</button>
+        <button class="btn btn-xs btn-default" ng-click="postAsGoing(place.place_id, $index)"><i class="fa fa-user-plus fa-lg"></i> | <span class="badge">{{place.going}}</span></button>
       </span>
+    </li>
+    <li class="list-group-item list-inline center-block text-center" id="spinner" ng-show=working>
+      <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
     </li>
   </ul>
 </div>

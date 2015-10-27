@@ -2,12 +2,19 @@
 
 angular.module('vanvlackCoordinationApp')
   .controller('MainCtrl', function ($scope, $http, $routeParams, $location, $window, Modal) {
+
     $scope.listData = [];
+    $scope.geolocationBtnText = "Use my location";
+    $scope.working = false;
     //gets geolocation from browser/sensor and calls getNearby
 
     $scope.getLocation = function() {
+      $scope.listData = [];
+      $scope.working = true;
+      $scope.geolocationBtnText = "Getting Location..."
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position){
+          $scope.geolocationBtnText = "Use my location";
           $scope.getNearby({lat: position.coords.latitude, lng: position.coords.longitude});
         });
       } else {
@@ -24,6 +31,8 @@ angular.module('vanvlackCoordinationApp')
     };
     //on select get details then call list with lat/long
     $scope.onSelectAutocomplete = function($item, $model, $label){
+      $scope.listData = [];
+      $scope.working = true;
       $scope.getDetails($item.placeID, function(data){
         $scope.getNearby(data.result.geometry.location);
       })
@@ -38,6 +47,7 @@ angular.module('vanvlackCoordinationApp')
     //get nearby list and update model
     $scope.getNearby = function(location){
       $http.get('/api/places/list?lat=' + location.lat + '&lng=' + location.lng).success(function(data){
+        $scope.working = false;
         $scope.listData = data;
         //upate url with new location.
         $location.search('lat', location.lat);
