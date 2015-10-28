@@ -33,6 +33,7 @@ exports.places = function(req, res) {
     method: 'GET'
   };
 
+
   var googlePlace = https.get(options, function(data) {
     var raw = '';
     var body = [];
@@ -69,8 +70,11 @@ exports.lookup = function(req, res) {
     path: '/maps/api/place/autocomplete/json?input=' + req.params.search + '&types=geocode&language=en&key=' + config.google.clientID,
     method: 'GET'
   };
+  console.log(options);
+
 
   var places = https.request(options, function(data) {
+    console.log(data);
     var output = {};
     data.on('data', function (chunk) {
       res.write(chunk);

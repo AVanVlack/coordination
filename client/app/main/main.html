@@ -1,14 +1,19 @@
 
+
 <div class="row" id="header">
   <div class="col-md-2 col-md-push-8 col-md-offset-1 text-right">
-    <a class="btn btn-twitter" href="" ng-click="loginOauth('twitter')">
+    <a class="btn btn-twitter" href="#" ng-hide="isLoggedIn" ng-click="loginOauth('twitter')">
       <i class="fa fa-twitter"></i> Sign in
+    </a>
+    <a class="btn btn-twitter" href="#" ng-show="isLoggedIn" ng-click="logout()">
+      <i class="fa fa-sign-out"></i> Sign out
     </a>
   </div>
   <div class="col-md-8 col-md-pull-2">
       <h1 class="block-text-yellow" id="logo">Barver</h1>
       <br>
-      <h2 id="about" class="block-text-yellow">See how many people will be going tonight. </h2><i class="fa fa-info-circle fa-lg" id="i"></i>
+      <h2 id="about" class="block-text-yellow">See how many people will be going tonight.</h2>
+      <a href="#" tooltip-trigger="focus" tooltip-placement="top" uib-tooltip-html="tooltipText"><i class="fa fa-info-circle fa-lg" id="i"></i></a>
   </div>
 </div>
 
@@ -19,19 +24,26 @@
         <input type="text"
                ng-model="someTerm"
                class="form-control"
-               placeholder="Search city or place"
-               typeahead="place.name for place in autocomplete($viewValue)"
-               typeahead-on-select="onSelectAutocomplete($item, $model, $label)">
+               placeholder="Search city"
+               uib-typeahead="place.name for place in autocomplete($viewValue)"
+               uib-typeahead-on-select="onSelectAutocomplete($item, $model, $label)">
         <span class="input-group-btn">
           <button class="btn btn-default" type="button" name="button" ng-click="getLocation()" id="geolocation-btn">{{geolocationBtnText}}</button>
         </span>
       </div>
     </li>
     <li class="list-group-item text-overflow clearfix" ng-repeat="place in listData">
-      {{place.name}}
+      <a href="#" ng-click="isCollapsed = moreInfo($index, place.place_id, this.isCollapsed)">{{place.name}} <i class="fa fa-caret-down"></i></a>
       <span class="pull-right">
         <button class="btn btn-xs btn-default" ng-click="postAsGoing(place.place_id, $index)"><i class="fa fa-user-plus fa-lg"></i> | <span class="badge">{{place.going}}</span></button>
       </span>
+      <div uib-collapse="isCollapsed">
+        <div class="panel-body">
+          Address: {{place.moreInfo.formatted_address}}<br>
+          Phone: {{place.moreInfo.formatted_phone_number}}<br>
+          Website: <a href="{{place.moreInfo.website}}">{{place.moreInfo.website}}</a>
+        </div>
+      </div>
     </li>
     <li class="list-group-item list-inline center-block text-center" id="spinner" ng-show=working>
       <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>

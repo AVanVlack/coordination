@@ -86,9 +86,9 @@ module.exports = function (grunt) {
         files: [
           '{.tmp,<%= yeoman.client %>}/{app,components}/**/*.css',
           '{.tmp,<%= yeoman.client %>}/{app,components}/**/*.html',
-          
+
           '{.tmp,<%= yeoman.client %>}/{app,components}/**/*.js',
-          
+
           '!{.tmp,<%= yeoman.client %>}{app,components}/**/*.spec.js',
           '!{.tmp,<%= yeoman.client %>}/{app,components}/**/*.mock.js',
           '<%= yeoman.client %>/assets/images/{,*//*}*.{png,jpg,jpeg,gif,webp,svg}'
@@ -226,7 +226,7 @@ module.exports = function (grunt) {
             '<%= yeoman.dist %>/public/{,*/}*.js',
             '<%= yeoman.dist %>/public/{,*/}*.css',
             '<%= yeoman.dist %>/public/assets/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
-            '<%= yeoman.dist %>/public/assets/fonts/*'
+            // '<%= yeoman.dist %>/public/assets/fonts/*'
           ]
         }
       }
@@ -256,6 +256,11 @@ module.exports = function (grunt) {
         patterns: {
           js: [
             [/(assets\/images\/.*?\.(?:gif|jpeg|jpg|png|webp|svg))/gm, 'Update the JS to reference our revved images']
+          ],
+          css: [
+            [/(..\/fonts\/)/g, 'Fix webfonts path', function(match) {
+              return match.replace('../fonts/', '../assets/fonts/');
+            }]
           ]
         }
       }
@@ -353,7 +358,23 @@ module.exports = function (grunt) {
           cwd: '.tmp/images',
           dest: '<%= yeoman.dist %>/public/assets/images',
           src: ['generated/*']
-        }, {
+        },{
+
+          // include font-awesome webfonts
+         expand: true,
+         dot: true,
+         cwd: '<%= yeoman.client %>/bower_components/font-awesome',
+         src: ['fonts/*.*'],
+         dest: '<%= yeoman.dist %>/public/assets'
+       },{
+         // include bootstrap webfonts
+         expand: true,
+         dot: true,
+         cwd: '<%= yeoman.client %>/bower_components/bootstrap/dist',
+         src: ['fonts/*.*'],
+         dest: '<%= yeoman.dist %>/public/assets'
+       },
+        {
           expand: true,
           dest: '<%= yeoman.dist %>',
           src: [
@@ -469,12 +490,12 @@ module.exports = function (grunt) {
         files: {
           '<%= yeoman.client %>/index.html': [
                [
-                 
+
                  '{.tmp,<%= yeoman.client %>}/{app,components}/**/*.js',
-                 
-                 '!{.tmp,<%= yeoman.client %>}/app/app.js',               
+
+                 '!{.tmp,<%= yeoman.client %>}/app/app.js',
                  '!{.tmp,<%= yeoman.client %>}/{app,components}/**/*.spec.js',
-                 '!{.tmp,<%= yeoman.client %>}/{app,components}/**/*.mock.js'               
+                 '!{.tmp,<%= yeoman.client %>}/{app,components}/**/*.mock.js'
                ]
             ]
         }

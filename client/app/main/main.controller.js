@@ -1,11 +1,13 @@
 'use strict';
 
 angular.module('vanvlackCoordinationApp')
-  .controller('MainCtrl', function ($scope, $http, $routeParams, $location, $window, Modal) {
-
+  .controller('MainCtrl', function ($scope, $http, $routeParams, $location, $window, $sce, Auth) {
+    $scope.isCollapsed = true;
     $scope.listData = [];
     $scope.geolocationBtnText = "Use my location";
     $scope.working = false;
+    $scope.isLoggedIn = Auth.isLoggedIn();
+    $scope.tooltipText = $sce.trustAsHtml('<p>Seach for a place and we will display bars in your area. The number of people going tonight will help you find the most popular place. Sign in and add yourself to the going.</p>')
     //gets geolocation from browser/sensor and calls getNearby
 
     $scope.getLocation = function() {
@@ -74,12 +76,34 @@ angular.module('vanvlackCoordinationApp')
         }
       })
     };
+
+    //login
     $scope.loginOauth = function(provider) {
       $window.location.href = '/auth/' + provider + $location.url();
+    };
+
+    //logout
+    $scope.logout = function() {
+      Auth.logout();
+      $scope.isLoggedIn = Auth.isLoggedIn();
+    };
+
+    //grab more info and display collapsed info
+    $scope.moreInfo = function(index, id, isCollapsed){
+      if(!$scope.listData[index].moreInfo){
+        $scope.listData[index].moreInfo = 1;
+        $scope.getDetails(id, function(data){
+          $scope.listData[index].moreInfo = data.result;
+          console.log($scope.listData[index]);
+          return false;
+        });
+      }else{
+          return !isCollapsed;
+      };
     };
 
     //Get list if params in url. eg. twtitter callback.
     if($routeParams.lat != null & $routeParams.lng != null){
       $scope.getNearby($routeParams);
     }
-  });
+  })
