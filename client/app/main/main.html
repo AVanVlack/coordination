@@ -26,7 +26,7 @@
                class="form-control"
                placeholder="Search city"
                uib-typeahead="place.name for place in autocomplete($viewValue)"
-               uib-typeahead-on-select="onSelectAutocomplete($item, $model, $label)">
+               typeahead-on-select="onSelectAutocomplete($item, $uibModel, $label)">
         <span class="input-group-btn">
           <button class="btn btn-default" type="button" name="button" ng-click="getLocation()" id="geolocation-btn">{{geolocationBtnText}}</button>
         </span>
